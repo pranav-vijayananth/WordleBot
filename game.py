@@ -1,5 +1,5 @@
 ##############################
-# WORDLE MODULE
+# WORDLE 
 ##############################
 
 from words import words
@@ -12,6 +12,10 @@ class WorldGame:
         self.green = "GREEN"
         self.words = words
         self.output = [["" for j in range(2)] for i in range(5)]
+
+
+    def is_five_letters(self, user_guess):
+        return len(user_guess) == 5
     
     def is_valid_word(self, user_guess): 
         if user_guess in self.words:
@@ -21,9 +25,14 @@ class WorldGame:
     
     
     def check_answer(self):
+
+        greens = 0
+
         for arr in self.output: 
             if arr[1] == self.green:
-                return True
+                greens += 1
+        
+        return (greens == 5)
 
     def run(self):
         for guess in range(1, 5+1): 
@@ -33,8 +42,15 @@ class WorldGame:
             else: 
                 pass
     
-            user_guess = input(f"Guess {guess}: ") 
-            self.is_valid_word(user_guess)
+            user_guess = input(f"Guess {guess}: ")
+            
+            # check methods
+
+            if self.is_five_letters(user_guess): 
+                self.is_valid_word(user_guess)
+            else:
+                quit("Not five letters")
+
 
             ##########
             # User-defined Data Structures 
@@ -48,8 +64,6 @@ class WorldGame:
             for index in range(0, 5):
                 self.output[index][0] = user_guess[index]
 
-
-        
             ### changing output ###
 
             for index in range(0, 5):
