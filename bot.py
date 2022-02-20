@@ -1,4 +1,7 @@
+from audioop import avg
+from turtle import pos, position
 from words import words
+from game import WorldGame
 from wordfreq import word_frequency
 import itertools
 import math
@@ -8,20 +11,45 @@ WorldeBot that simulates the WordleGame module using entropy,
 information theory, and day-to-day word frequencies. 
 
 """
-class WordleBot(): 
-    def __init__(self, word_state):
-        self.word_state = word_state
-    
+class WordleBot(WorldGame): 
+    def __init__(self, word):
+        self.word_state = []
+        self.word = word
+
+    @staticmethod
+    def information(p):
+        return math.log(1/p, 2)
+
     def calculate_entropy(self):
+
+        avg_entropy = 0
+        all_states = []
 
         # using numbers for easier calculation
         # each number coresponds to a color code
 
-        color_codes = [1, 2, 3]
+        color_codes = ["GREEN", "YELLOW", "BLACK"]
         pattern_variations = [p for p in itertools.product(color_codes, repeat=5)]
+
+        for var in pattern_variations:
+            all_states.append([
+                [self.word[0], var[0]], 
+                [self.word[1], var[1]], 
+                [self.word[2], var[2]], 
+                [self.word[3], var[3]], 
+                [self.word[4], var[4]]
+            ])
+
+        for state in all_states:
+            self.word_state = state
+            p = self.probability()
+            info = self.information(p)
+            avg_entropy += p * info
         
-        return pattern_variations
-    
+        return ((avg_entropy / 243) * 100)
+        
+        # return ((avg_entropy / (3**5)) * 100)
+
     # works in all cases 
     def probability(self):
 
@@ -57,11 +85,11 @@ class WordleBot():
 
             index += 1 
         
-        return possibilities
+        return len(possibilities) / len(words)
 
-    def run(self): 
+    def simulate_game(self): 
         pass
 
 
-bot = WordleBot([["w", "GREEN"], ["o", "GREEN"], ["o", "GREEN"], ["t", "GREEN"], ["z", "GREEN"]])
-print(bot.probability())
+bot = WordleBot("sient")
+print(bot.calculate_entropy())
